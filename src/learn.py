@@ -22,6 +22,8 @@ import cupy as np
 
 import pickle
 
+# {{{ def load_data(filename)
+# no necessary to explain
 def load_data(filename):
   global vocab
   sequences = open(filename).readlines()
@@ -31,7 +33,11 @@ def load_data(filename):
     words = [vocab[word] for word in line]
     data.append(np.array(words).astype(np.int32))
   return data
+#}}}
 
+# {{{ Seq2seq(chainr.Chain)
+# sequence to sequence class
+# This class output reply sequences if you input utterance data 
 class Seq2seq(chainer.Chain):
   def __init__(self, n_vocab, n_lay=1, n_unit=100, dropout=0.5):
     super(Seq2seq, self).__init__()
@@ -67,7 +73,11 @@ class Seq2seq(chainer.Chain):
       _, _, ys_embeded = self.decoder(hx, cx, ts_embeded)
       ys = [self.W(y) for y in ys_embeded]
       return ys
+# }}}
 
+# {{{ MyRegressor(chainr.Chain)
+# This class wrap predictor.
+# If you input xs and ts, predict ys by giving  xs for predictor, and calc loss.
 class MyRegressor(chainer.Chain):
   def __init__(self, predictor):
     super(MyRegressor,self).__init__(predictor=predictor)
@@ -87,7 +97,10 @@ class MyRegressor(chainer.Chain):
 
     reporter.report({'loss':self.loss}, self)
     return self.loss
+# }}}
 
+# {{{ Generator
+# no necessary to explain
 class Generator:
   def __init__(self,predictor, device=-1, converter = converter, max_size = 30):
     self.predictor = predictor
@@ -110,7 +123,10 @@ class Generator:
     ys= [np.concatenate(y) for y in ys]
     ys = to_device(device,ys)
     return ys
+# }}}
 
+# {{{ converter(batch,device)
+# convert from tupledataset to 
 def converter(batch,device):
   xs = []
   ts = []
@@ -120,6 +136,7 @@ def converter(batch,device):
     xs.append(to_device(device,x))
     ts.append(to_device(device,t))
   return (xs,ts)
+# }}}
 
 # 単語とidの辞書
 with open("data/vocab.dump", "rb") as f:
