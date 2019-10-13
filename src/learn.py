@@ -18,9 +18,12 @@ from chainer.training.triggers import EarlyStoppingTrigger
 
 from chainer.serializers import save_npz
 
-import cupy as np
+#import cupy as np
+import numpy as np
 
 import pickle
+import argparse
+import os
 
 # {{{ def load_data(filename)
 # no necessary to explain
@@ -34,6 +37,19 @@ def load_data(filename):
     data.append(np.array(words).astype(np.int32))
   return data
 #}}}
+
+# {{{ converter(batch,device)
+# convert from tupledataset to 
+def converter(batch,device):
+  xs = []
+  ts = []
+  for b in batch:
+    x = b[0]
+    t = b[1]
+    xs.append(to_device(device,x))
+    ts.append(to_device(device,t))
+  return (xs,ts)
+# }}}
 
 # {{{ Seq2seq(chainr.Chain)
 # sequence to sequence class
@@ -125,18 +141,12 @@ class Generator:
     return ys
 # }}}
 
-# {{{ converter(batch,device)
-# convert from tupledataset to 
-def converter(batch,device):
-  xs = []
-  ts = []
-  for b in batch:
-    x = b[0]
-    t = b[1]
-    xs.append(to_device(device,x))
-    ts.append(to_device(device,t))
-  return (xs,ts)
-# }}}
+parser = argparse.ArgumentParser()
+parser.add_argument('-m','--model_name',default='model/predictor.npz')
+parser.add_argument('-e','--epoch',default='500')
+parser.add_argument('-b','--batch_size',default='30')
+parser.add_argument('-d','--device_number',default='-1')
+args = parser.parse_args()
 
 # 単語とidの辞書
 with open("data/vocab.dump", "rb") as f:
@@ -157,9 +167,11 @@ n_valid = int(len(dataset) * 0.1)
 train, valid_test = split_dataset_random(dataset, n_train, seed=0)
 valid, test = split_dataset_random(valid_test, n_valid, seed=0)
 
-batch_size = 32
-n_epoch=500
-device = 0
+
+batch_size = int(args.batch_size)
+n_epoch = int(args.epoch)
+device = int(args.device_number)
+out_directory = os.path.dirname(args.model_name)
 
 train_iter = iterators.SerialIterator(train, batch_size)
 valid_iter = iterators.SerialIterator(valid, batch_size, shuffle=False, repeat=False)
@@ -175,7 +187,7 @@ updater = training.StandardUpdater(train_iter, optimizer, converter=converter, d
 
 trigger = EarlyStoppingTrigger(monitor='val/main/loss', check_trigger=(1, 'epoch'),
                                patients=10, max_trigger=(n_epoch, 'epoch'))
-trainer = training.Trainer(updater, trigger, out='results/seq2seq')
+trainer = training.Trainer(updater, trigger, out=out_directory)
 
 trainer.extend(extensions.LogReport(trigger=(1, 'epoch'), log_name='log'))
 trainer.extend(extensions.snapshot(filename='snapshot_epoch-{.updater.epoch}'))
@@ -200,4 +212,4 @@ with chainer.using_config('train', False), chainer.using_config('enable_backprop
 
 if device >= 0:
     predictor.to_cpu()
-save_npz('results/seq2seq/predictor.npz', predictor)
+save_npz(args.model_name, predictor)
