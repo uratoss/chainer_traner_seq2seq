@@ -1,4 +1,4 @@
 data/*
-!.gitkeep
 model/*
-!model/.gitkeep
+!.gitkeep
+.python-version
