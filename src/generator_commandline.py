@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import chainer
 
 import chainer.links as L
@@ -23,6 +24,8 @@ import pickle
 import MeCab
 import sys
 import argparse
+
+
 
 def load_data(filename):
   global vocab
@@ -126,7 +129,7 @@ if device >= 0:
 model = Generator(predictor=predictor, device=device, max_size=30)
 
 # MeCabの設定
-m = MeCab.Tagger('-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')
+m = MeCab.Tagger('-Owakati -d /usr/lib64/mecab/dic/mecab-ipadic-neologd')
 
 # ユーザの入力を処理
 user_input = sys.stdin.readlines()[0]
