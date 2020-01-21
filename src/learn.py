@@ -38,7 +38,7 @@ def load_data(filename):
   return data
 #}}}
 
-# {{{ converter(batch,device)
+# {{{ def converter(batch,device)
 # convert from tupledataset to 
 def converter(batch,device):
   xs = []
@@ -51,7 +51,7 @@ def converter(batch,device):
   return (xs,ts)
 # }}}
 
-# {{{ Seq2seq(chainr.Chain)
+# {{{ class Seq2seq(chainr.Chain)
 # sequence to sequence class
 # This class output reply sequences if you input utterance data 
 class Seq2seq(chainer.Chain):
@@ -91,7 +91,7 @@ class Seq2seq(chainer.Chain):
       return ys
 # }}}
 
-# {{{ MyRegressor(chainr.Chain)
+# {{{ class MyRegressor(chainr.Chain)
 # This class wrap predictor.
 # If you input xs and ts, predict ys by giving  xs for predictor, and calc loss.
 class MyRegressor(chainer.Chain):
@@ -115,7 +115,7 @@ class MyRegressor(chainer.Chain):
     return self.loss
 # }}}
 
-# {{{ Generator
+# {{{ class Generator
 # no necessary to explain
 class Generator:
   def __init__(self,predictor, device=-1, converter = converter, max_size = 30):
