@@ -1,7 +1,8 @@
 import logging
-import numpy as np
 from gensim.models import word2vec
 import sys
+
+import numpy as xp
 
 class W2v():
     __model = None
@@ -35,7 +36,7 @@ class W2v():
             return self.__model.wv[word]
         except Exception as e:
             #print(e)
-            return np.random.uniform(-1.0,1.0,(1,self.__model.vector_size))[0]
+            return xp.random.uniform(-1.0,1.0,(1,self.__model.vector_size))[0]
 
     def getWvID(self, word_id):
         return self.getWv(self.getWord(word_id))
@@ -60,16 +61,15 @@ class W2v():
         return self.__model.vector_size
 
 class EmbedID(W2v):
-    def __init__(self, xp, model_path = None):
+    def __init__(self, model_path = None):
         super().__init__(model_path)
-        self.xp = xp
 
     def __call__(self, sequence):
         try:
             embed_sequence = []
             for word in sequence:
                 embed_sequence.append(super().getWvID(word))
-            return self.xp.array(embed_sequence,dtype=self.xp.float32)
+            return xp.array(embed_sequence,dtype=xp.float32)
         except:
             return 
 if __name__ == '__main__':
