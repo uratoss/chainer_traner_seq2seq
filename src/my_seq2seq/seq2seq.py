@@ -15,6 +15,8 @@ class Seq2seq(chainer.Chain):
         super().__init__()
         with self.init_scope():
             self.embed = embed
+            print(self.embed.getVectorSize())
+            print(len(self.embed.getVocab()))
             self.encoder = L.NStepLSTM(n_lay, self.embed.getVectorSize(), n_unit, dropout)
             self.decoder = L.NStepLSTM(n_lay, self.embed.getVectorSize(), n_unit, dropout)
             self.W = L.Linear(n_unit, len(self.embed.getVocab()))
@@ -27,7 +29,6 @@ class Seq2seq(chainer.Chain):
         # デコーダ側の処理
         eos = xp.array([self.embed.getID("<eos>")], dtype=xp.int32)
         if ts is None:
-            print(xs)
             ys = [eos] * len(xs)
             ys_list = []
             for i in range(max_size):

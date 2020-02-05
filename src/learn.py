@@ -23,7 +23,7 @@ from my_seq2seq import util
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--model_name', default='model/predictor.npz')
+    parser.add_argument('-m', '--model_name', default='model/seq2seq/predictor.npz')
     parser.add_argument('-e', '--epoch', default='500')
     parser.add_argument('-b', '--batch_size', default='30')
     parser.add_argument('-d', '--device_number', default='-1')
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     x_file = "./data/x.txt"
     t_file = "./data/t.txt"
-    emb = w2v.EmbedID(xp, './src/word2vec.model')
+    emb = w2v.EmbedID('./model/word2vec/word2vec.model')
     train, valid, test = util.load_dataset(emb,x_file,t_file)
 
     batch_size = int(args.batch_size)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     valid_iter = iterators.SerialIterator(
         valid, batch_size, shuffle=False, repeat=False)
 
-    predictor = seq2seq.Seq2seq(emb)
+    predictor = seq2seq.Seq2seq(emb,n_unit=200)
 
     if device >= 0:
         predictor.to_gpu(device)
@@ -74,15 +74,13 @@ if __name__ == '__main__':
     gen_model = util.Generator(predictor=predictor, device=device, max_size=30)
     with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
         ys_list = gen_model(test)
-        print(ys_list)
-        sys.exit()
         for ys in ys_list:
             for y in ys:
                 y = int(y)
-                if y is vocab['<eos>']:
+                if y is emb.getID('<eos>'):
                     print('\n')
                     break
-                print(rvocab[y], end='')
+                print(emb.getWord(y), end='')
 
     if device >= 0:
         predictor.to_cpu()

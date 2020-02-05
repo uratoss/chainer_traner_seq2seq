@@ -15,7 +15,7 @@ class W2v():
             except FileNotFoundError as e:
                 print(e)
 
-    def train(self, corpus_path, size = 100, min_count = 1, window = 5, iter = 20, out_path = './word2vec.model'):
+    def train(self, corpus_path, size = 100, min_count = 1, window = 5, iter = 20, out_path = './model/word2vec/word2vec.model'):
         logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s",level=logging.INFO)
         try:
             sentences = word2vec.PathLineSentences(corpus_path)
@@ -74,4 +74,4 @@ class EmbedID(W2v):
             return 
 if __name__ == '__main__':
     w2v = W2v()
-    w2v.train('./data')
+    w2v.train('./data',size = 200, iter=50)

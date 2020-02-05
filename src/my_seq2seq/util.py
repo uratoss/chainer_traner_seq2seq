@@ -24,7 +24,6 @@ def load_dataset(id_dict, x_path, t_path, train_per = 0.7, valid_per = 0.2):
         words = line.replace("\n", "").strip().split()
         words_id = [id_dict.getID(word) for word in words]
         ts.append(xp.array(words_id, dtype=xp.int32))
-
     dataset = TupleDataset(xs, ts)
 
     n_train = int(len(dataset) * train_per)
@@ -32,8 +31,7 @@ def load_dataset(id_dict, x_path, t_path, train_per = 0.7, valid_per = 0.2):
     train, valid_test = split_dataset_random(dataset, n_train, seed=0)
     valid, test = split_dataset_random(valid_test, n_valid, seed=0)
 
-    #return (train, valid, test) 
-    return (train, train, train) 
+    return (train, valid, test) 
 # }}}
 
 # {{{ def converter(batch,device)
