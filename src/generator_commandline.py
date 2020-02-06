@@ -10,6 +10,12 @@ import MeCab
 import sys
 import argparse
 
+import random
+
+from my_seq2seq import w2v
+from my_seq2seq import seq2seq
+from my_seq2seq import util
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--model_name',
@@ -32,13 +38,13 @@ if __name__ == '__main__':
     if device >= 0:
         predictor.to_gpu(device)
 
-    model = util.Generator(predictor=predictor, device=device, max_size=30)
+    model = util.Generator(predictor=predictor, device=device, max_size=10)
 
     # MeCabの設定
     m = MeCab.Tagger('-Owakati -d /usr/lib64/mecab/dic/mecab-ipadic-neologd')
 
     # ユーザの入力を処理
-    user_input = sys.stdin.readlines()[0]
+    user_input = sys.stdin.readline()
     s = m.parse(user_input.replace(' ', '').strip()
                 ).replace('\n', '').strip().split()
     xs = []
@@ -46,7 +52,7 @@ if __name__ == '__main__':
         try:
             xs.append(vocab[x])
         except(KeyError):
-            xs.append(0)
+            xs.append(random.uniform(0, len(vocab)-1))
     xs.append(vocab['<eos>'])
     xs = xp.array(xs).astype(xp.int32)
     test = [(xs, xp.zeros(1).astype(xp.int32))]
