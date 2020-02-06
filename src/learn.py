@@ -13,7 +13,7 @@ from chainer.serializers import save_npz
 #import cupy as xp
 import numpy as xp
 
-import pickle 
+import pickle
 import argparse
 import os
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--model_name',
                         default='model/seq2seq/predictor.npz')
-    parser.add_argument('-e', '--epoch', default='500')
+    parser.add_argument('-e', '--epoch', default='100')
     parser.add_argument('-b', '--batch_size', default='30')
     parser.add_argument('-d', '--device_number', default='-1')
     args = parser.parse_args()
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     valid_iter = iterators.SerialIterator(
         valid, batch_size, shuffle=False, repeat=False)
 
-    predictor = seq2seq.Seq2seq(n_vocab=len(vocab), n_unit=100)
+    predictor = seq2seq.Seq2seq(n_vocab=len(vocab))
 
     if device >= 0:
         predictor.to_gpu(device)

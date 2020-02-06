@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# testing output using trained model 
+# testing output using trained model
 # BLEU,and so on
 import sys
 import math
 import MeCab
+
 
 def tsize(ysm):
     ysm = ["".join(ys) for ys in ysm]
@@ -14,7 +15,7 @@ def tsize(ysm):
             tmp[word] = 1.0
         else:
             tmp[word] += 1.0
-    #for k, v in sorted(tmp.items(), key=lambda x: -x[1]):
+    # for k, v in sorted(tmp.items(), key=lambda x: -x[1]):
     #    print(str(k) + "," + str(v))
     return len(tmp)
 
@@ -50,6 +51,7 @@ def intersect_list(lst1, lst2):
         else:
             arr.append(element)
     return arr
+
 
 def bleu(ysm, ysr, n):
     numer = [0.0] * n
@@ -103,7 +105,7 @@ def main(argv):
     ]
     ysm = open(argv[1]).read().replace(" ", "").strip().split("\n")
     ysr = open(argv[2]).read().replace(" ", "").strip().split("\n")
-    print(match(ysm, ysr),',',bleu(ysml, ysrl, 4),',',tsize(ysm))
+    print(match(ysm, ysr), ',', bleu(ysml, ysrl, 4), ',', tsize(ysm))
     #print("BLEU : " + str(bleu(ysml, ysrl, 4)))
     #print("一致率 : " + str(match(ysm, ysr)))
     #print("種類数 : " + str(tsize(ysm)))

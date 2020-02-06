@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# display group 
+# display group
 import sys
 import math
 import MeCab
+
 
 def tsize(ysm):
     ysm = ["".join(ys) for ys in ysm]

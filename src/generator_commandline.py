@@ -47,6 +47,7 @@ if __name__ == '__main__':
             xs.append(vocab[x])
         except(KeyError):
             xs.append(0)
+    xs.append(vocab['<eos>'])
     xs = xp.array(xs).astype(xp.int32)
     test = [(xs, xp.zeros(1).astype(xp.int32))]
 

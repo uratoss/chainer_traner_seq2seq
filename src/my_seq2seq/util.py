@@ -15,7 +15,7 @@ from chainer.dataset.convert import to_device
 # no necessary to explain
 
 
-def load_dataset(id_dict, x_path, t_path, train_per=0.7, valid_per=0.2):
+def load_dataset(id_dict, x_path, t_path, train_per=0.7, valid_per=0.1):
     xs = []
     for line in open(x_path).readlines():
         words = line.replace("\n", "").strip().split()

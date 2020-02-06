@@ -41,7 +41,8 @@ class Seq2seq(chainer.Chain):
             ys_list.append(ys)
             return ys_list
         else:
-            ts = [F.concat((xp.reshape(t[-1],(1)), t[:-1]), axis=0) for t in ts]
+            ts = [F.concat((xp.reshape(t[-1], (1)), t[:-1]), axis=0)
+                  for t in ts]
             ts_embeded = [self.embedy(t) for t in ts]
             _, _, ys_embeded = self.decoder(hx, cx, ts_embeded)
             ys = [self.W(y) for y in ys_embeded]
