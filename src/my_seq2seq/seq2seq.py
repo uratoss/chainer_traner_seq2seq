@@ -15,8 +15,6 @@ class Seq2seq(chainer.Chain):
         super().__init__()
         with self.init_scope():
             self.embed = embed
-            print(self.embed.getVectorSize())
-            print(len(self.embed.getVocab()))
             self.encoder = L.NStepLSTM(n_lay, self.embed.getVectorSize(), n_unit, dropout)
             self.decoder = L.NStepLSTM(n_lay, self.embed.getVectorSize(), n_unit, dropout)
             self.W = L.Linear(n_unit, len(self.embed.getVocab()))
@@ -27,9 +25,8 @@ class Seq2seq(chainer.Chain):
         xs_embeded = [self.embed(x) for x in xs]
         hx, cx, _ = self.encoder(hx, cx, xs_embeded)
         # デコーダ側の処理
-        eos = xp.array([self.embed.getID("<eos>")], dtype=xp.int32)
         if ts is None:
-            ys = [eos] * len(xs)
+            ys = [xp.array([x[-1]], dtype=xp.int32) for x in xs]
             ys_list = []
             for i in range(max_size):
                 ys_embeded = [self.embed(y) for y in ys]
@@ -37,12 +34,14 @@ class Seq2seq(chainer.Chain):
                 ys = [xp.reshape(xp.argmax(F.softmax(self.W(y_embeded)).data), (1))
                       for y_embeded in ys_embeded]
                 ys_list.append(ys)
-            ys_list.append([eos] * len(xs))
+            ys = [xp.array([x[-1]], dtype=xp.int32) for x in xs]
+            ys_list.append(ys)
             return ys_list
         else:
-            ts = [F.concat((eos, t[:-1]), axis=0) for t in ts]
+            ts = [F.concat((xp.reshape(t[-1],(1)), t[:-1]), axis=0) for t in ts]
             ts_embeded = [self.embed(t) for t in ts]
             _, _, ys_embeded = self.decoder(hx, cx, ts_embeded)
             ys = [self.W(y) for y in ys_embeded]
             return ys
+
 # }}}

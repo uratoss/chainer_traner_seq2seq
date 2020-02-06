@@ -16,7 +16,7 @@ from chainer.dataset.convert import to_device
 def load_dataset(id_dict, x_path, t_path, train_per = 0.7, valid_per = 0.2):
     xs = []
     for line in open(x_path).readlines():
-        words = line.replace("\n", "").strip().split()[:-1]
+        words = line.replace("\n", "").strip().split()
         words_id = [id_dict.getID(word) for word in words]
         xs.append(xp.array(words_id, dtype=xp.int32))
     ts = []
