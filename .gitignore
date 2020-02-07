@@ -1,4 +1,7 @@
 data/*
 model/*
+model/seq2seq/*
+model/word2vec/*
 !.gitkeep
 .python-version
+__pycache__
