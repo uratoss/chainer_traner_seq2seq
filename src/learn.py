@@ -47,7 +47,8 @@ if __name__ == '__main__':
     valid_iter = iterators.SerialIterator(
         valid, batch_size, shuffle=False, repeat=False)
 
-    predictor = seq2seq.Seq2seq(n_vocab=len(vocab))
+    #predictor = seq2seq.Seq2seq(n_vocab=len(vocab))
+    predictor = seq2seq.GAtt(n_vocab=len(vocab))
 
     if device >= 0:
         predictor.to_gpu(device)
