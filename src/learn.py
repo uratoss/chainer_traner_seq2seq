@@ -17,7 +17,7 @@ import pickle
 import argparse
 import os
 
-from my_seq2seq import w2v
+#from my_seq2seq import w2v
 from my_seq2seq import seq2seq
 from my_seq2seq import util
 
