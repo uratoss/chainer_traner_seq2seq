@@ -48,7 +48,7 @@ if __name__ == '__main__':
         valid, batch_size, shuffle=False, repeat=False)
 
     #predictor = seq2seq.Seq2seq(n_vocab=len(vocab))
-    predictor = seq2seq.GAtt(n_vocab=len(vocab))
+    predictor = seq2seq.GAtt(n_vocab=len(vocab),n_lay=2,n_unit=200)
 
     if device >= 0:
         predictor.to_gpu(device)

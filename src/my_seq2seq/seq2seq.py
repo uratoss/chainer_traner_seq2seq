@@ -69,20 +69,16 @@ class GAtt(chainer.Chain):
 
     def scoreDot(self, atts, ys):
         xs = [self.W3(att) for att in atts]
-        dot = F.batch_matmul(ys,F.transpose(xs,(0,2,1)))
-        aws = F.softmax(dot,2)
-        cts = None
-        for x,aw in zip(xs,aws): # split batch
-            aw = F.expand_dims(aw,1)
-            x = F.tile(F.expand_dims(x,0),(aw.shape[0],1,1))
-            ct = F.batch_matmul(aw,x)
-            cts = ct if cts is None else F.concat((cts,ct),1)
-        cts = F.transpose(cts,(1,0,2))
-        ds = [F.tanh(self.Wc1(ct) + self.Wc2(y)) for y, ct in zip(ys,cts)] 
-        #for y,ct in zip(ys,cts):
-        #    d = F.tanh(self.Wc1(ct) + self.Wc2(y))
-        #    d = F.expand_dims(d,0)
-        #    ds = d if ds is None else F.concat((ds,d),0)
+        xs_T = [F.transpose(x, (1, 0))for x in xs]
+        dots = [F.matmul(y, x)for x, y in zip(xs_T, ys)]
+        aws = [F.softmax(dot, 1) for dot in dots]
+        cts = []
+        for x, aw in zip(xs, aws):  # split batch
+            aw = F.expand_dims(aw, 1)
+            x = F.tile(F.expand_dims(x, 0), (aw.shape[0], 1, 1))
+            ct = F.batch_matmul(aw, x)
+            cts.append(F.reshape(ct, (ct.shape[0], ct.shape[2])))
+        ds = [F.tanh(self.Wc1(ct) + self.Wc2(y)) for y, ct in zip(ys, cts)]
         return ds
 
     def __call__(self, xs, ts=None, hx=None, cx=None, max_size=30):
@@ -110,7 +106,6 @@ class GAtt(chainer.Chain):
                 ys_embeded = [self.embedy(y) for y in ys]
                 hx, cx, ys_embeded = self.decoder(hx, cx, ys_embeded)
                 ys_embeded = self.scoreDot(attentions, ys_embeded)
-                sys.exit()
                 ys = [xp.reshape(xp.argmax(F.softmax(self.W(y_embeded)).data), (1))
                       for y_embeded in ys_embeded]
                 ys_list.append(ys)
@@ -121,7 +116,6 @@ class GAtt(chainer.Chain):
             # デコーダ側の学習
             ts = [F.concat((xp.reshape(t[-1], (1)), t[:-1]), axis=0)
                   for t in ts]
-
             ts_embeded = [self.embedy(t) for t in ts]
             _, _, ys_embeded = self.decoder(hx, cx, ts_embeded)
             # attを計算する
