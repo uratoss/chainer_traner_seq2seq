@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import chainer
 
 from chainer.serializers import load_npz
@@ -44,7 +45,7 @@ def load_models(model_name):
     load_npz(model_name, predictor)
 
     model = util.Generator(predictor=predictor)
-    m = MeCab.Tagger('-Owakati -d /usr/lib64/mecab/dic/mecab-ipadic-neologd')
+    m = MeCab.Tagger('-Owakati')
 
 
 @app.route("/predict", methods=["POST"])
